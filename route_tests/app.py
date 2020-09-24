@@ -1,8 +1,7 @@
 from flask import Flask, request
 
-from unit_tests.string_functions import *
-
 app = Flask(__name__)
+
 
 @app.route('/')
 def index():
@@ -21,9 +20,14 @@ def show_color_form():
     </form>
     """
 
+
 @app.route('/color_results')
 def process_color_results():
-    users_favorite_color = request.args.get('color')
+    users_favorite_color = str(request.args.get('color')).lower().strip()
+    print(users_favorite_color)
+    if(not users_favorite_color):
+        return "You didn't enter a color"
+
     return f"Wow, {users_favorite_color} is my favorite color, too!"
 
 
@@ -40,10 +44,18 @@ def choose_froyo():
     </form>
     """
 
+
 @app.route('/froyo_results')
 def show_froyo_results():
     users_froyo_flavor = request.args.get('flavor')
     toppings = request.args.get('toppings')
+
+    if(not users_froyo_flavor):
+        return "You didn't enter a flavor of froyo"
+
+    if(not toppings):
+        toppings = "no toppings"
+
     return f'You ordered {users_froyo_flavor} flavored Fro-Yo with toppings {toppings}!'
 
 
@@ -57,11 +69,21 @@ def reverse_message_form():
     </form>
     """
 
+
 @app.route('/message_results', methods=['POST'])
 def message_results():
     message = request.form.get('message')
     reversed_message = reverse(message)
+
+    if(not message):
+        return "You didn't enter a message."
+
     return f'Here\'s your reversed message: {reversed_message}'
+
+
+def reverse(str):
+    """Reverses the characters in a string."""
+    return str[::-1]
 
 
 @app.route('/calculator')
@@ -81,11 +103,23 @@ def calculator():
     </form>
     """
 
+
 @app.route('/calculator_results')
 def calculator_results():
-    operand1 = int(request.args.get('operand1'))
-    operand2 = int(request.args.get('operand2'))
+
+    input_operand1 = request.args.get('operand1')
+    input_operand2 = request.args.get('operand2')
+
+    if(not input_operand1 or not input_operand2):
+        return "Please enter two operands."
+
+    operand1 = int(input_operand1)
+    operand2 = int(input_operand2)
     operation = request.args.get('operation')
+
+    if(operand2 == 0 and operation == "divide"):
+        return "You Cannot Divide By Zero."
+
     if operation == 'add':
         result = operand1 + operand2
     elif operation == 'subtract':
